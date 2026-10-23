@@ -4,17 +4,19 @@ import com.badlogic.gdx.math.Rectangle;
 
 public class MovimientoPersecucion implements EstrategiaMovimiento {
     private float velocidadY = 200f;
-    private float velocidadX = 100f;
+    private float velocidadX = 150f;
 
     @Override
-    public void mover(Rectangle hitbox, float deltaTime, Tarro tarro) {
-        hitbox.y -= velocidadY * deltaTime;
+    public void mover(Rectangle hitbox, Rectangle objetivo, float delta) {
+        hitbox.y -= velocidadY * delta;
 
-        // Persigue la posición X del tarro
-        if (hitbox.x < tarro.getArea().x) {
-            hitbox.x += velocidadX * deltaTime;
-        } else if (hitbox.x > tarro.getArea().x) {
-            hitbox.x -= velocidadX * deltaTime;
+        // Persigue el eje X del objetivo (Tarro/Sombrero)
+        if (objetivo != null) {
+            if (hitbox.x < objetivo.x) {
+                hitbox.x += velocidadX * delta;
+            } else if (hitbox.x > objetivo.x) {
+                hitbox.x -= velocidadX * delta;
+            }
         }
     }
 }
