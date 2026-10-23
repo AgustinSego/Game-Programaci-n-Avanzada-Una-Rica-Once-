@@ -21,7 +21,9 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 	private boolean herido = false;
 	private int tiempoHeridoMax=50;
 	private int tiempoHerido;
-	   
+
+	private final float ANCHO_SOMBRERO = 90f;
+	private final float ALTO_SOMBRERO = 60f;
 	   
 	private Tarro(Texture tex, Sound ss) {
 		bucketImage = tex;
@@ -56,10 +58,10 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 		this.herido = false;
 		this.tiempoHerido = 0;
 		this.bucket = new Rectangle();
-		this.bucket.x = 800 / 2f - 64 / 2f;
+		this.bucket.width = ANCHO_SOMBRERO;
+		this.bucket.height = ALTO_SOMBRERO;
+		this.bucket.x = 800 / 2f - this.bucket.width / 2f;
 		this.bucket.y = 20;
-		this.bucket.width = 64;
-		this.bucket.height = 64;
 	}
 
 	public void dañar() {
@@ -70,9 +72,9 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 	}
 
 	public void dibujar(SpriteBatch batch) {
-		if (!herido) batch.draw(bucketImage, bucket.x, bucket.y);
+		if (!herido) batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
 		else {
-			batch.draw(bucketImage, bucket.x, bucket.y+ MathUtils.random(-5,5));
+			batch.draw(bucketImage, bucket.x, bucket.y+ MathUtils.random(-5,5), bucket.width, bucket.height);
 			tiempoHerido--;
 			if (tiempoHerido<=0) herido = false;
 		}
