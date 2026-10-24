@@ -44,15 +44,17 @@ public class Lluvia {
 		float y = 480;
 		int probabilidad = MathUtils.random(1, 100);
 
-		// Distribución de spawn
+		ObjetoBuilder builder = new ObjetoBuilder();
+		builder.setPosicion(x, y);
+
 		if (probabilidad <= 50) {
-			objetosCaidos.add(new Moneda(x, y, texMoneda, dropSound)); // 50% Moneda
+			objetosCaidos.add(builder.setTextura(texMoneda).setSonido(dropSound).buildMoneda());
 		} else if (probabilidad <= 60) {
-			objetosCaidos.add(new Billete(x, y, texBillete, dropSound)); // 10% Billete (Raro)
+			objetosCaidos.add(builder.setTextura(texBillete).setSonido(dropSound).buildBillete());
 		} else if (probabilidad <= 80) {
-			objetosCaidos.add(new Mano(x, y, texMano)); // 20% Mano
+			objetosCaidos.add(builder.setTextura(texMano).buildMano());
 		} else {
-			objetosCaidos.add(new Chicle(x, y, texChicle)); // 20% Chicle
+			objetosCaidos.add(builder.setTextura(texChicle).buildChicle());
 		}
 
 		lastDropTime = TimeUtils.nanoTime();

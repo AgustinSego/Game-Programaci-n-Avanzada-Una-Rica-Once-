@@ -36,7 +36,7 @@ public class GameScreen implements Screen {
 		Texture texChicle = new Texture(Gdx.files.internal("chicle.png"));
 
 		Sound dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.wav"));
-		Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("rain.mp3"));
+		Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("corxea.mp3"));
 
 		// Inicializar la Lluvia con los nuevos recursos
 		lluvia = new Lluvia(texMoneda, texBillete, texMano, texChicle, dropSound, rainMusic);
