@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.Input;
 
 public class GameOverScreen implements Screen {
 	private final GameLluviaMenu game;
@@ -30,10 +31,10 @@ public class GameOverScreen implements Screen {
 		batch.begin();
 		font.draw(batch, "GAME OVER ", 100, 300);
 		font.draw(batch, "TE LANCEARON!!! ", 100, 200);
-		font.draw(batch, "Toca en cualquier lado para reiniciar.", 100, 100);
+		font.draw(batch, "Pulsa ESPACIO para reiniciar.", 100, 100);
 		batch.end();
 
-		if (Gdx.input.isTouched()) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 			game.setScreen(new GameScreen(game));
 			dispose();
 		}

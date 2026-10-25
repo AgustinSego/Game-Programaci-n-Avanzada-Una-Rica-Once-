@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.Input;
 
 
 public class MainMenuScreen implements Screen {
@@ -33,11 +34,11 @@ public class MainMenuScreen implements Screen {
 		batch.begin();
 		font.getData().setScale(2, 2);
 		font.draw(batch, "Bienvenido a Una Rica Once!!! ", 100, camera.viewportHeight/2+50);
-		font.draw(batch, "Toca en cualquier lugar para comenzar!", 100, camera.viewportHeight/2-50);
+		font.draw(batch, "Pulsa ESPACIO para comenzar!", 100, camera.viewportHeight/2-50);
 
 		batch.end();
 
-		if (Gdx.input.isTouched()) {
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
 			game.setScreen(new GameScreen(game));
 			dispose();
 		}
