@@ -14,7 +14,6 @@ public class Lluvia {
 	private Array<ObjetoCaida> objetosCaidos;
 	private long lastDropTime;
 
-	// Nuevas texturas
 	private Texture texMoneda;
 	private Texture texBillete;
 	private Texture texMano;
@@ -68,7 +67,6 @@ public class Lluvia {
 		for (int i = 0; i < objetosCaidos.size; i++) {
 			ObjetoCaida obj = objetosCaidos.get(i);
 
-			// EL TEMPLATE METHOD EN ACCIÓN: Mueve, revisa límites y colisiones internamente
 			obj.actualizar(tarro, delta);
 
 			if (obj.estaDestruido()) {

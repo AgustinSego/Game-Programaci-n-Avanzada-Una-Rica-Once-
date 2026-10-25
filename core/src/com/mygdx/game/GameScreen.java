@@ -50,7 +50,8 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-		ScreenUtils.clear(0, 0, 0.2f, 1);
+		//ScreenUtils.clear(0, 0, 0.2f, 1); COLOR AZUL ORIGINAL
+		ScreenUtils.clear(0.08f, 0.35f, 0.18f, 1f); // COLOR VERDE PARA SIMULAR UNA PLAZA.
 		camera.update();
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();

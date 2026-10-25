@@ -19,12 +19,19 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 	private int puntos = 0;
 	private int velx = 400;
 	private boolean herido = false;
-	private int tiempoHeridoMax=50;
+	private int tiempoHeridoMax = 50;
 	private int tiempoHerido;
 
-	private final float ANCHO_SOMBRERO = 90f;
-	private final float ALTO_SOMBRERO = 60f;
-	   
+	// TAMAÑO DE LA IMAGEN
+	private final float ANCHO_DIBUJO = 120f;
+	private final float ALTO_DIBUJO = 80f;
+	private float xVisual;
+	private float yVisual = 20f;
+
+	// TAMAÑO PARA LA HITBOX
+	private final float ANCHO_HITBOX = 66f;
+	private final float ALTO_HITBOX = 24f;
+
 	private Tarro(Texture tex, Sound ss) {
 		bucketImage = tex;
 		sonidoHerido = ss;
@@ -36,64 +43,57 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 		return instancia;
 	}
 
-	// USAR SOLO PARA NO PASAR PARAMETROS, Y SI SE SABE QUE YA EXISTE TARRO.
-	public static Tarro getInstance(){return instancia;} // DEVUELVE LA INSTANCIA DIRECTAMENTE.
+	public static Tarro getInstance() { return instancia; } // DEVUELVE LA INSTANCIA DIRECTAMENTE.
 
-	public int getVidas() {
-			return vidas;
-		}
-	public int getPuntos() {
-			return puntos;
-		}
-	public Rectangle getArea() {
-			return bucket;
-		}
-	public void sumarPuntos(int pp) {
-			puntos+=pp;
-		}
+	public int getVidas() { return vidas; }
+	public int getPuntos() { return puntos; }
+	public Rectangle getArea() { return bucket; }
+	public void sumarPuntos(int pp) { puntos += pp; }
 
-	public void reiniciar() { // YA NO SE CREA SE REINICIA SIMPLEMENTE EL SOMBRERO.
+	public void reiniciar() {
 		this.vidas = 3;
 		this.puntos = 0;
 		this.herido = false;
 		this.tiempoHerido = 0;
+		this.xVisual = 800 / 2f - ANCHO_DIBUJO / 2f;
+		this.yVisual = 20f;
+
 		this.bucket = new Rectangle();
-		this.bucket.width = ANCHO_SOMBRERO;
-		this.bucket.height = ALTO_SOMBRERO;
-		this.bucket.x = 800 / 2f - this.bucket.width / 2f;
-		this.bucket.y = 20;
+		this.bucket.width = ANCHO_HITBOX;
+		this.bucket.height = ALTO_HITBOX;
+
+		this.bucket.x = xVisual + (ANCHO_DIBUJO - ANCHO_HITBOX) / 2f;
+		this.bucket.y = yVisual + 24f;
 	}
 
 	public void dañar() {
 		vidas--;
 		herido = true;
-		tiempoHerido=tiempoHeridoMax;
-		sonidoHerido.play();
+		tiempoHerido = tiempoHeridoMax;
+		if (sonidoHerido != null) sonidoHerido.play();
 	}
 
 	public void dibujar(SpriteBatch batch) {
-		if (!herido) batch.draw(bucketImage, bucket.x, bucket.y, bucket.width, bucket.height);
-		else {
-			batch.draw(bucketImage, bucket.x, bucket.y+ MathUtils.random(-5,5), bucket.width, bucket.height);
+		if (!herido) {
+			batch.draw(bucketImage, xVisual, yVisual, ANCHO_DIBUJO, ALTO_DIBUJO);
+		} else {
+			batch.draw(bucketImage, xVisual, yVisual + MathUtils.random(-5, 5), ANCHO_DIBUJO, ALTO_DIBUJO);
 			tiempoHerido--;
-			if (tiempoHerido<=0) herido = false;
+			if (tiempoHerido <= 0) herido = false;
 		}
 	}
-	   
+
 	public void actualizarMovimiento() {
-		// movimiento desde mouse/touch
-		/*if(Gdx.input.isTouched()) {
-		      Vector3 touchPos = new Vector3();
-		      touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-			  camera.unproject(touchPos);
-			  bucket.x = touchPos.x - 64 / 2;
-			}*/
-		   //movimiento desde teclado
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) bucket.x -= velx * Gdx.graphics.getDeltaTime();
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) bucket.x += velx * Gdx.graphics.getDeltaTime();
-		// que no se salga de los bordes izq y der
-		if(bucket.x < 0) bucket.x = 0;
-		if(bucket.x > 800 - 64) bucket.x = 800 - 64;
+		float delta = Gdx.graphics.getDeltaTime();
+
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) xVisual -= velx * delta;
+		if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) xVisual += velx * delta;
+
+		if (xVisual < 0) xVisual = 0;
+		if (xVisual > 800 - ANCHO_DIBUJO) xVisual = 800 - ANCHO_DIBUJO;
+
+		this.bucket.x = xVisual + (ANCHO_DIBUJO - ANCHO_HITBOX) / 2f;
+		this.bucket.y = yVisual + 24f;
 	}
 
 	public void destruir() {
@@ -101,8 +101,6 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 		if (sonidoHerido != null) sonidoHerido.dispose();
 		instancia = null;
 	}
-	public boolean estaHerido() {
-	   return herido;
-   }
-	   
+
+	public boolean estaHerido() { return herido; }
 }
