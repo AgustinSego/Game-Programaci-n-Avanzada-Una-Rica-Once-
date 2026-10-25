@@ -1,0 +1,191 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+
+interface EstrategiaMovimiento {
+    +mover(hitbox: Rectangle, objetivo: Rectangle, delta: float): void
+}
+
+interface Screen {
+}
+
+
+abstract class Game {
+}
+
+class GameLluviaMenu {
+    -batch: SpriteBatch
+    -font: BitmapFont
+    -higherScore: int
+    +create(): void
+    +render(): void
+    +dispose(): void
+    +getBatch(): SpriteBatch
+    +getFont(): BitmapFont
+    +getHigherScore(): int
+    +setHigherScore(higherScore: int): void
+}
+
+
+class MainMenuScreen {
+    -game: GameLluviaMenu
+    -batch: SpriteBatch
+    -font: BitmapFont
+    -camera: OrthographicCamera
+    +MainMenuScreen(game: GameLluviaMenu)
+    +render(delta: float): void
+    +show(): void
+    +resize(width: int, height: int): void
+    +pause(): void
+    +resume(): void
+    +hide(): void
+    +dispose(): void
+}
+
+class GameScreen {
+    -game: GameLluviaMenu
+    -camera: OrthographicCamera
+    -batch: SpriteBatch
+    -font: BitmapFont
+    -tarro: Tarro
+    -lluvia: Lluvia
+    +GameScreen(game: GameLluviaMenu)
+    +render(delta: float): void
+    +resize(width: int, height: int): void
+    +show(): void
+    +hide(): void
+    +pause(): void
+    +resume(): void
+    +dispose(): void
+}
+
+class GameOverScreen {
+    -game: GameLluviaMenu
+    -batch: SpriteBatch
+    -font: BitmapFont
+    -camera: OrthographicCamera
+    +GameOverScreen(game: GameLluviaMenu)
+    +render(delta: float): void
+    +show(): void
+    +resize(width: int, height: int): void
+    +pause(): void
+    +resume(): void
+    +hide(): void
+    +dispose(): void
+}
+
+
+class Lluvia {
+    -objetosCaidos: Array<ObjetoCaida>
+    -lastDropTime: long
+    -texMoneda: Texture
+    -texBillete: Texture
+    -texMano: Texture
+    -texChicle: Texture
+    -dropSound: Sound
+    -rainMusic: Music
+    +Lluvia(texMoneda: Texture, texBillete: Texture, texMano: Texture, texChicle: Texture, dropSound: Sound, rainMusic: Music)
+    +crear(): void
+    -crearObjetoCaida(): void
+    +actualizarMovimiento(tarro: Tarro): boolean
+    +actualizarDibujoLluvia(batch: SpriteBatch): void
+    +destruir(): void
+    +pausar(): void
+    +continuar(): void
+}
+
+class ObjetoBuilder {
+    +setPosicion(x: float, y: float): ObjetoBuilder
+    +setTextura(textura: Texture): ObjetoBuilder
+    +setSonido(sonido: Sound): ObjetoBuilder
+    +buildMoneda(): Moneda
+    +buildBillete(): Billete
+    +buildMano(): Mano
+    +buildChicle(): Chicle
+}
+
+abstract class ObjetoCaida {
+    #area: Rectangle
+    #estrategiaMovimiento: EstrategiaMovimiento
+    #destruido: boolean
+    +ObjetoCaida(x: float, y: float, estrategia: EstrategiaMovimiento)
+    +actualizar(tarro: Tarro, delta: float): void
+    +dibujar(batch: SpriteBatch): void
+    +estaDestruido(): boolean
+    #{abstract} aplicarEfecto(tarro: Tarro): void
+    #{abstract} getTextura(): Texture
+    #{abstract} reproducirSonido(): void
+}
+
+class Moneda {
+    -textura: Texture
+    -sonido: Sound
+    +Moneda(x: float, y: float, textura: Texture, sonido: Sound)
+    #aplicarEfecto(tarro: Tarro): void
+    #getTextura(): Texture
+    #reproducirSonido(): void
+}
+
+class Billete {
+    -textura: Texture
+    -sonido: Sound
+    +Billete(x: float, y: float, textura: Texture, sonido: Sound)
+    #aplicarEfecto(tarro: Tarro): void
+    #getTextura(): Texture
+    #reproducirSonido(): void
+}
+
+class Mano {
+    -textura: Texture
+    +Mano(x: float, y: float, textura: Texture)
+    #aplicarEfecto(tarro: Tarro): void
+    #getTextura(): Texture
+    #reproducirSonido(): void
+}
+
+class Chicle {
+    -textura: Texture
+    +Chicle(x: float, y: float, textura: Texture)
+    #aplicarEfecto(tarro: Tarro): void
+    #getTextura(): Texture
+    #reproducirSonido(): void
+}
+
+
+class MovimientoRecto {
+    +mover(hitbox: Rectangle, objetivo: Rectangle, delta: float): void
+}
+
+class MovimientoZigZag {
+    +mover(hitbox: Rectangle, objetivo: Rectangle, delta: float): void
+}
+
+class MovimientoPersecucion {
+    +mover(hitbox: Rectangle, objetivo: Rectangle, delta: float): void
+}
+
+
+Game <|-- GameLluviaMenu
+Screen <|.. MainMenuScreen
+Screen <|.. GameScreen
+Screen <|.. GameOverScreen
+
+ObjetoCaida <|-- Moneda
+ObjetoCaida <|-- Billete
+ObjetoCaida <|-- Mano
+ObjetoCaida <|-- Chicle
+
+EstrategiaMovimiento <|.. MovimientoRecto
+EstrategiaMovimiento <|.. MovimientoZigZag
+EstrategiaMovimiento <|.. MovimientoPersecucion
+
+GameScreen "1" *-- "1" Lluvia
+Lluvia "1" o-- "*" ObjetoCaida : objetosCaidos
+ObjetoCaida "1" o-- "1" EstrategiaMovimiento : estrategiaMovimiento
+Lluvia ..> ObjetoBuilder : usa
+
+MainMenuScreen --> GameLluviaMenu
+GameScreen --> GameLluviaMenu
+GameOverScreen --> GameLluviaMenu
+
+@enduml
