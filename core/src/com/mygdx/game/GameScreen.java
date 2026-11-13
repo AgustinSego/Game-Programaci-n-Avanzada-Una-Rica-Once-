@@ -23,10 +23,8 @@ public class GameScreen implements Screen {
 		this.batch = game.getBatch();
 		this.font = game.getFont();
 
-		Sound hurtSound = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
-
 		// Uso del patrón Singleton para el Tarro (Sombrero)
-		tarro = Tarro.getInstance(new Texture(Gdx.files.internal("bucket.png")), hurtSound);
+		tarro = Tarro.getInstance();
 		tarro.reiniciar();
 
 		// Cargar las nuevas texturas para los objetos
@@ -63,7 +61,7 @@ public class GameScreen implements Screen {
 		if (!tarro.estaHerido()) {
 			tarro.actualizarMovimiento();
 
-			if (!lluvia.actualizarMovimiento(tarro)) {
+			if (!lluvia.actualizarMovimiento()) {
 				if (game.getHigherScore() < tarro.getPuntos())
 					game.setHigherScore(tarro.getPuntos());
 
@@ -98,7 +96,6 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		tarro.destruir(); // Manejado por el Singleton
 		lluvia.destruir();
 	}
 }

@@ -32,18 +32,18 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 	private final float ANCHO_HITBOX = 66f;
 	private final float ALTO_HITBOX = 24f;
 
-	private Tarro(Texture tex, Sound ss) {
-		bucketImage = tex;
-		sonidoHerido = ss;
+	private Tarro() {
+		bucketImage = new Texture(Gdx.files.internal("bucket.png"));
+		sonidoHerido = Gdx.audio.newSound(Gdx.files.internal("hurt.ogg"));
 		reiniciar();
 	}
 
-	public static Tarro getInstance(Texture textura, Sound sonido) { // CUANDO NO HAY TARRO USAR ESTE.
-		if (instancia == null) instancia = new Tarro(textura, sonido); // VERIFICA SI EXISTE YA UNA INSTANCIA
+	public static Tarro getInstance() {
+		if (instancia == null) {
+			instancia = new Tarro();
+		}
 		return instancia;
 	}
-
-	public static Tarro getInstance() { return instancia; } // DEVUELVE LA INSTANCIA DIRECTAMENTE.
 
 	public int getVidas() { return vidas; }
 	public int getPuntos() { return puntos; }

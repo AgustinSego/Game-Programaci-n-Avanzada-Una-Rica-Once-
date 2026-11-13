@@ -15,8 +15,10 @@ public abstract class ObjetoCaida {
     }
 
     // TEMPLATE METHOD: Define el esqueleto del comportamiento
-    public final void actualizar(Tarro tarro, float delta) {
+    public final void actualizar(float delta) {
         if (destruido) return;
+
+        Tarro tarro = Tarro.getInstance();
 
         // 1. Mover (usando Strategy)
         estrategiaMovimiento.mover(hitbox, tarro.getArea(), delta);

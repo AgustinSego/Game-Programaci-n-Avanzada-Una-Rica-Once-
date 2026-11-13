@@ -59,7 +59,7 @@ public class Lluvia {
 		lastDropTime = TimeUtils.nanoTime();
 	}
 
-	public boolean actualizarMovimiento(Tarro tarro) {
+	public boolean actualizarMovimiento() {
 		if(TimeUtils.nanoTime() - lastDropTime > 1000000000) crearObjetoCaida(); // Genera objetos cada 1 seg aprox
 
 		float delta = Gdx.graphics.getDeltaTime();
@@ -67,7 +67,7 @@ public class Lluvia {
 		for (int i = 0; i < objetosCaidos.size; i++) {
 			ObjetoCaida obj = objetosCaidos.get(i);
 
-			obj.actualizar(tarro, delta);
+			obj.actualizar(delta);
 
 			if (obj.estaDestruido()) {
 				objetosCaidos.removeIndex(i);
@@ -75,7 +75,7 @@ public class Lluvia {
 			}
 		}
 
-		if (tarro.getVidas() <= 0) {
+		if (Tarro.getInstance().getVidas() <= 0) {
 			return false; // Game Over
 		}
 
