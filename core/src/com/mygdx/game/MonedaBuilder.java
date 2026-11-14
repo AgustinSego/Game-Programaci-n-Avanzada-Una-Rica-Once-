@@ -1,0 +1,59 @@
+package com.mygdx.game;
+
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
+
+public class MonedaBuilder implements BuilderObjetoCaida {
+    private float x;
+    private float y;
+    private Texture textura;
+    private Sound sonido;
+    private EstrategiaMovimiento estrategia;
+
+    public MonedaBuilder() {
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        this.x = 0;
+        this.y = 0;
+        this.textura = null;
+        this.sonido = null;
+        this.estrategia = new MovimientoRecto();
+    }
+
+    @Override
+    public BuilderObjetoCaida setPosicion(float x, float y) {
+        this.x = x;
+        this.y = y;
+        return this;
+    }
+
+    @Override
+    public BuilderObjetoCaida setTextura(Texture textura) {
+        this.textura = textura;
+        return this;
+    }
+
+    @Override
+    public BuilderObjetoCaida setSonido(Sound sonido) {
+        this.sonido = sonido;
+        return this;
+    }
+
+    @Override
+    public BuilderObjetoCaida setEstrategiaMovimiento(EstrategiaMovimiento estrategia) {
+        if (estrategia != null) {
+            this.estrategia = estrategia;
+        }
+        return this;
+    }
+
+    @Override
+    public ObjetoCaida getResult() {
+        Moneda producto = new Moneda(x, y, textura, sonido, estrategia);
+        reset();
+        return producto;
+    }
+}

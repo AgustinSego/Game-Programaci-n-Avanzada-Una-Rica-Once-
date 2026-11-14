@@ -10,76 +10,82 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class Lluvia {
-	// Reemplazamos los arrays paralelos por un array de objetos polimórficos
 	private Array<ObjetoCaida> objetosCaidos;
-	private long lastDropTime;
-
-	private Texture texMoneda;
-	private Texture texBillete;
-	private Texture texMano;
-	private Texture texChicle;
-
-	private Sound dropSound;
+	private Array<ConfiguracionObjetoCaida> configuraciones;
+	private DirectorObjetos director;
 	private Music rainMusic;
+	private long lastDropTime;
+	private int pesoTotal;
 
-	public Lluvia(Texture texMoneda, Texture texBillete, Texture texMano, Texture texChicle, Sound dropSound, Music rainMusic) {
-		this.texMoneda = texMoneda;
-		this.texBillete = texBillete;
-		this.texMano = texMano;
-		this.texChicle = texChicle;
-		this.dropSound = dropSound;
+	public Lluvia(Music rainMusic) {
 		this.rainMusic = rainMusic;
+		this.configuraciones = new Array<ConfiguracionObjetoCaida>();
+		this.director = new DirectorObjetos();
+		this.pesoTotal = 0;
+	}
+
+	public void registrarObjeto(ConfiguracionObjetoCaida configuracion) {
+		if (configuracion != null && configuracion.getPesoProbabilidad() > 0) {
+			configuraciones.add(configuracion);
+			pesoTotal += configuracion.getPesoProbabilidad();
+		}
 	}
 
 	public void crear() {
 		objetosCaidos = new Array<ObjetoCaida>();
 		crearObjetoCaida();
-		rainMusic.setLooping(true);
-		rainMusic.play();
+		if (rainMusic != null) {
+			rainMusic.setLooping(true);
+			rainMusic.play();
+		}
 	}
 
 	private void crearObjetoCaida() {
+		if (configuraciones.size == 0 || pesoTotal <= 0) return;
+
 		float x = MathUtils.random(0, 800 - 64);
 		float y = 480;
-		int probabilidad = MathUtils.random(1, 100);
+		int probabilidad = MathUtils.random(1, pesoTotal);
+		int acumulado = 0;
 
-		ObjetoBuilder builder = new ObjetoBuilder();
-		builder.setPosicion(x, y);
-
-		if (probabilidad <= 50) {
-			objetosCaidos.add(builder.setTextura(texMoneda).setSonido(dropSound).buildMoneda());
-		} else if (probabilidad <= 60) {
-			objetosCaidos.add(builder.setTextura(texBillete).setSonido(dropSound).buildBillete());
-		} else if (probabilidad <= 80) {
-			objetosCaidos.add(builder.setTextura(texMano).buildMano());
-		} else {
-			objetosCaidos.add(builder.setTextura(texChicle).buildChicle());
+		for (ConfiguracionObjetoCaida config : configuraciones) {
+			acumulado += config.getPesoProbabilidad();
+			if (probabilidad <= acumulado) {
+				ObjetoCaida nuevo = director.construirObjeto(
+						config.getBuilder(),
+						x,
+						y,
+						config.getTextura(),
+						config.getSonido(),
+						config.crearEstrategia()
+				);
+				objetosCaidos.add(nuevo);
+				break;
+			}
 		}
 
 		lastDropTime = TimeUtils.nanoTime();
 	}
 
-	public boolean actualizarMovimiento(Tarro tarro) {
-		if(TimeUtils.nanoTime() - lastDropTime > 1000000000) crearObjetoCaida(); // Genera objetos cada 1 seg aprox
+	public boolean actualizarMovimiento() {
+		if (TimeUtils.nanoTime() - lastDropTime > 1000000000L) {
+			crearObjetoCaida();
+		}
 
 		float delta = Gdx.graphics.getDeltaTime();
+		Tarro tarro = Tarro.getInstance();
 
 		for (int i = 0; i < objetosCaidos.size; i++) {
 			ObjetoCaida obj = objetosCaidos.get(i);
-
-			obj.actualizar(tarro, delta);
+			obj.actualizar(delta);
 
 			if (obj.estaDestruido()) {
 				objetosCaidos.removeIndex(i);
-				i--; // Ajustar índice tras eliminar
+				i--;
 			}
 		}
 
-		if (tarro.getVidas() <= 0) {
-			return false; // Game Over
-		}
-
-		return true;
+		return tarro != null && tarro.getVidas() > 0;
 	}
 
 	public void actualizarDibujoLluvia(SpriteBatch batch) {
@@ -89,19 +95,36 @@ public class Lluvia {
 	}
 
 	public void destruir() {
-		dropSound.dispose();
-		rainMusic.dispose();
-		texMoneda.dispose();
-		texBillete.dispose();
-		texMano.dispose();
-		texChicle.dispose();
+		if (rainMusic != null) {
+			rainMusic.dispose();
+		}
+
+		Array<Texture> texturasLiberadas = new Array<Texture>();
+		Array<Sound> sonidosLiberados = new Array<Sound>();
+
+		for (ConfiguracionObjetoCaida config : configuraciones) {
+			Texture tex = config.getTextura();
+			if (tex != null && !texturasLiberadas.contains(tex, true)) {
+				tex.dispose();
+				texturasLiberadas.add(tex);
+			}
+			Sound snd = config.getSonido();
+			if (snd != null && !sonidosLiberados.contains(snd, true)) {
+				snd.dispose();
+				sonidosLiberados.add(snd);
+			}
+		}
 	}
 
 	public void pausar() {
-		rainMusic.stop();
+		if (rainMusic != null) {
+			rainMusic.stop();
+		}
 	}
 
 	public void continuar() {
-		rainMusic.play();
+		if (rainMusic != null) {
+			rainMusic.play();
+		}
 	}
 }

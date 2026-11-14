@@ -38,16 +38,33 @@ public class Tarro { // SE LLAMA TARRO PERO SABEMOS QUE ES UN SOMBRERO.
 		reiniciar();
 	}
 
-	public static Tarro getInstance(Texture textura, Sound sonido) { // CUANDO NO HAY TARRO USAR ESTE.
-		if (instancia == null) instancia = new Tarro(textura, sonido); // VERIFICA SI EXISTE YA UNA INSTANCIA
+	public static Tarro getInstance(Texture textura, Sound sonido) {
+		if (instancia == null) {
+			instancia = new Tarro(textura, sonido);
+		} else {
+			// Evita fuga de memoria si se pasan recursos nuevos con una instancia ya activa
+			if (textura != null && textura != instancia.bucketImage) {
+				textura.dispose();
+			}
+			if (sonido != null && sonido != instancia.sonidoHerido) {
+				sonido.dispose();
+			}
+		}
 		return instancia;
 	}
 
-	public static Tarro getInstance() { return instancia; } // DEVUELVE LA INSTANCIA DIRECTAMENTE.
+	public static Tarro getInstance() {
+		return instancia;
+	}
 
 	public int getVidas() { return vidas; }
 	public int getPuntos() { return puntos; }
-	public Rectangle getArea() { return bucket; }
+
+	// Copia defensiva para evitar mutación externa de la hitbox interna
+	public Rectangle getArea() {
+		return new Rectangle(bucket);
+	}
+
 	public void sumarPuntos(int pp) { puntos += pp; }
 
 	public void reiniciar() {
